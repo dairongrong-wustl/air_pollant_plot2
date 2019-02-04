@@ -1,0 +1,42 @@
+---
+title: "air_pollutant"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is to check in which month the highest value of different air pollutants for the year was recorded by the monitors. 
+
+```{r air pollutant, message=FALSE}
+air_summary = read.csv("epa_air_quality_annual_summary.csv",header = TRUE)
+library(dplyr)
+parameter_data <- air_summary %>% 
+                     mutate(month_max = format(as.POSIXct(air_summary[,31], format="%Y-%m-%d %H:%M:%OS"), format = "%m")) %>%
+                        select(parameter_name,month_max) %>%
+                            group_by(parameter_name)
+```
+
+## Including Plots
+
+```{r message=FALSE }
+library(ggplot2)
+
+p1 <- ggplot(data = parameter_data[parameter_data$parameter_name == "Benzene", ], aes(x = factor(month_max))) +
+   geom_histogram(stat="count") 
+p1 + labs(x="month", y = "count", title = "The months in which the highest value of Benzene for the year were recorded")
+
+p2 <- ggplot(data = parameter_data[parameter_data$parameter_name == "Ozone", ], aes(x = factor(month_max))) +
+   geom_histogram(stat="count") 
+p2 + labs(x="month", y = "count", title = "The months in which the highest value of Ozone for the year were recorded")
+
+  
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
